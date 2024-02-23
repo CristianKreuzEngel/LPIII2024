@@ -4,7 +4,7 @@ const getAluno = async(req, res, next) => {
     try{
         const retorno = await alunoService.getAluno(req.params)
         res.status(201).json(retorno)
-    }catch{
+    }catch(err){
         res.status(500).send(err)
     }
 }
