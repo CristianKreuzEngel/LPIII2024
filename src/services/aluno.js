@@ -6,7 +6,7 @@ const sql_insert =
 
 const postAluno = async (params) => {
     const {id, nome, sobrenome, periodo, observacao } = params
-    return await db.query(sql, [id, nome, sobrenome, periodo, observacao])
+    return await db.query(sql_insert, [id, nome, sobrenome, periodo, observacao])
 }
 const sql_get =`select id,
                        nome,
@@ -57,7 +57,7 @@ const patchAluno = async (params) => {
     let countParams = 1
     if(params.nome) {
         countParams ++
-        fields += `nome = $${countParams}`
+        fields += ` nome = $${countParams}`
         binds.push(params.nome)
     }
     if (params.sobrenome) {
@@ -76,6 +76,7 @@ const patchAluno = async (params) => {
         binds.push(params.observacao)
       }
       let sql = sql_patch + fields + ' where id = $1 '
+      console.log(sql)
       return await db.query(sql, binds)
 }    
        

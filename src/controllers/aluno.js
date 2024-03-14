@@ -34,7 +34,7 @@ const putAluno = async (req, res, next) => {
         let params = req.body
         params.id = req.params.id
         const retorno = await alunoService.putAluno(params)
-        .then(ret => res.status(204).send(ret))
+        .then(ret => res.status(200).send(ret))
         .catch(err => res.status(500).send(err.message))
     }catch(err){
         next(err);
@@ -46,7 +46,7 @@ const patchAluno = async (req, res, next) => {
         let params = req.body
         params.id = req.params.id
         const retorno = await alunoService.patchAluno(params)
-        .then(ret => res.status(204).send(ret))
+        .then(ret => res.status(200).send(ret))
         .catch(err => res.status(500).send(err.message))
     }catch(err){
         next(err);
