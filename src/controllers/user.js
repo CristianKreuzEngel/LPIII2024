@@ -35,8 +35,20 @@ const putUser = async (req, res, next) => {
         res.status(500).send(err.message)
     }
 }
+const patchPassword = async (req, res, next) => {
+    try {
+        let params = req.body
+        params.id = req.params.id
+        const retorno = await usuarioService.patchPassword(params)
+        .then(ret => res.status(200).send(ret))
+        .catch(err => res.status(500).send(err.message))
+    } catch (err){
+        res.status(500).send(err.message)
+    }
+}
 
 module.exports.newUser = newUser
 module.exports.getUser = getUser
 module.exports.deleteUser = deleteUser
 module.exports.putUser = putUser
+module.exports.patchPassword = patchPassword

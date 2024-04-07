@@ -30,9 +30,7 @@ const deleteUser = async (params) => {
    
 const sql_put = 
     `update users
-        set usu_name = $2,
-            usu_salt = $3,
-            usu_password = $4,
+        set usu_name = $2
      where usu_id = $1`
 
 const getUserId = async (id) =>{
@@ -42,22 +40,48 @@ const getUserId = async (id) =>{
 }
  
 const putUser = async (params) => {
-    const {id, name, salt, password} = params
-    const {gen_salt, hashedPassword} = cript.criarUsuario(password)
+    const {id, name, password} = params
     const userData = await getUserId(id)
-    console.log(`SenhaParamas: ${password}\nSenha: ${userData.usu_password}\ncriptosenha:  ${hashedPassword}\nsalt-gen: ${gen_salt}\nSalt: ${userData.usu_salt}`)
-    if(userData.usu_password == hashedPassword && gen_salt == userData.usu_salt){   
-        console.log(`${password}\n ${hashedPassword}\n${gen_salt}\n${salt}`)    
-        return await db.query(sql_put, [ id, name, salt, password])
+    const validorPassword = cript.comparePassword(userData.usu_password,userData.usu_salt,password)
+    console.log(validorPassword)
+    if(validorPassword){      
+        return await db.query(sql_put, [ id, name])
     }else{
         return console.error('errou')
     }
 }
 
- 
+const sql_patch =
+        `update users
+            set `
+
+const patchPassword = async (params) => {
+    let binds = []
+    let hashedNewPassword;
+    const {id, name, password, newPassword} = params
+    const userData = await getUserId(id)
+    let validorPassword = cript.comparePassword(userData.usu_password,userData.usu_salt, password)
+    if(validorPassword){
+        validorPassword = cript.comparePassword(userData.usu_password,userData.usu_salt, newPassword)
+        if(!validorPassword){
+            hashedNewPassword = cript.hashPassword(newPassword, userData.usu_salt)
+            let sql = `usu_password = '${hashedNewPassword}' where usu_id = ${id} `
+            binds.push(sql)
+            console.log(binds)  
+            return await db.query(sql_patch + sql)
+        }else{
+            console.error('Senha igual');
+            return "Nova senha deve ser diferente da senha atual.";
+        }
+    }else{
+       return console.error('Senha inválida')
+       return "Senha inválida.";
+    }
+}
 
 
 module.exports.newUser = newUser
 module.exports.getUser = getUser
 module.exports.deleteUser = deleteUser
 module.exports.putUser = putUser
+module.exports.patchPassword = patchPassword

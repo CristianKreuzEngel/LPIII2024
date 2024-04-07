@@ -6,4 +6,5 @@ module.exports = (app) => {
     app.get('/user', usuarioController.getUser)
     app.delete('/user/:id', usuarioController.deleteUser)
     app.put('/user/:id', usuarioController.putUser)
+    app.patch('/user/:id', usuarioController.patchPassword)
 }
